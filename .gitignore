@@ -1,0 +1,15 @@
+#ide settings
+.idea/
+.myeclipse/
+.settings/
+.classpath
+.project
+.DS_Store
+*.iml
+#classes
+target/
+out/
+classes/a
+#project files
+export/
+logs/
