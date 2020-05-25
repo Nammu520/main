@@ -2,11 +2,9 @@ package base;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
-import org.springframework.util.DigestUtils;
 import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
@@ -16,10 +14,14 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -61,20 +63,43 @@ public class Main {
 
     public static final String da = "2020-10-11";
 
-
+    public static final String SIMPLE_VIN_REGEX = "^[0-9A-HJ-NPR-Z]{17}$";
 
     public static void main(String[] args) throws InterruptedException, ParseException ,
             IOException, JsonParseException, JsonMappingException {
-        try {
-            Integer a = null;
-            if(null == a || (8 / 0) == 1){
 
-            }
-            throw new RuntimeException();
-        }catch (Exception e){
-            int a = 5 / 0;
-            throw new IndexOutOfBoundsException();
+        InputStream
+        Main te = new Main();
+        String vin = "1LNHM81WXYY837128";
+        System.out.println(te.isValid(vin));
+    }
+
+    public boolean isValid(Object o) {
+        if(o == null){
+            return true;
         }
+        String vin = o.toString();
+        int v[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3, 4, 5, 0, 7, 0, 9, 2, 3, 4, 5, 6, 7, 8, 9}; // values
+        int w[] = {8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2}; //weight
+        String code = "0123456789X";
+        if(!Pattern.matches(SIMPLE_VIN_REGEX, vin)){
+            return false;
+        }
+        int checkSum = 0;
+        for(int i = 0; i < vin.length(); i++){
+            char c = vin.charAt(i);
+            int n;
+            if(c >= 65 && c <= 90){ //A-Z,no O,I,Q
+                n = c - 65 + 10;
+            }else if(c >= 48 && c <= 57) { // 0 - 9
+                n = c - 48;
+            }else {
+                return false;
+            }
+            checkSum += (w[i] * v[n]);
+        }
+        checkSum %= 11;
+        return vin.charAt(8) == code.charAt(checkSum);
     }
 
 
@@ -214,6 +239,27 @@ public class Main {
             table.add(row);
         }
         return table;
+    }
+}
+class Operator{
+    String name;
+
+    String phone;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }
 
